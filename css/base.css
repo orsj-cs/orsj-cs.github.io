@@ -1,0 +1,100 @@
+/* Base Css */
+
+body {
+ background-color:white;
+ color: black;
+}
+
+h1 {
+  color:#00008B;
+  font-size:x-large;
+  border-style: double;
+  border-color: #110000;
+  border-width:  0.1em 0em 0.1em 0em;
+  padding: 0.5em 0.5em 0.5em 0.5em;
+}
+
+h2{
+  font-size:16pt;
+  font-weight:bold;
+  border-style:solid;
+  border-color:#00008B;
+  border-top-width:0px;
+  border-bottom-width:2px;
+  border-left-width:32px;
+  border-right-width:0px;
+  padding-top:10px;
+  padding-bottom:0px;
+  padding-left:5px;
+  padding-right:20px;
+}
+
+h3{
+  font-size:12pt;
+  font-weight:bold;
+  border-style:solid;
+  border-color:#00008B;
+  border-top-width:0px;
+  border-bottom-width:0px;
+  border-left-width:16px;
+  border-right-width:0px;
+  padding-top:10px;
+  padding-bottom:0px;
+  padding-left:5px;
+  padding-right:20px;
+}
+
+/* a */
+a:link {
+  text-decoration: none;
+  background-color: transparent;
+  color: navy;
+}
+a:visited {
+  text-decoration: none;
+  background-color: transparent;
+  color: #6a5acd;
+}
+a:hover, a:focus {
+  background-color: transparent;
+  color: red;
+}
+
+/* p */
+p {
+  text-indent: 1em;
+}
+
+p.noindent {
+  text-indent: 5em;
+}
+
+p.center {
+  text-align: center;
+}
+
+p.langnav {
+	text-align: right;
+        padding-top:  0em;
+        padding-bottom:  0em;
+}
+
+
+/* list */
+ul {
+  list-style:none;
+  line-height: 2em;
+  font-size:medium;
+  border-style: solid;
+  border-color: #00008B;
+  border-width: 0em 0em 0em 2em;
+  padding: 0.5em 1em;
+
+}
+
+/* table */
+th {
+  background-color : #7799ee;
+  color : #332211;
+}
+

@@ -1,0 +1,23 @@
+@import url(./base.css);
+
+/* Address Css */
+
+TABLE TH{
+ width:100;
+ background-color:#AAAACC;
+ text-align:center
+}
+
+TABLE TR{
+ height:20;
+}
+
+TABLE TD.odd{
+ background-color:#BBFFBB;
+ text-align:center
+}
+
+TABLE TD.even{
+ background-color:#CCCCFF;
+ text-align:center
+}
