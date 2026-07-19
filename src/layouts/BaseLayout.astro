@@ -1,0 +1,52 @@
+---
+import SiteNav from "../components/SiteNav.astro";
+import SiteFooter from "../components/SiteFooter.astro";
+import "../styles/global.css";
+
+interface Props {
+  title: string;
+  /** ページ見出し (<h1>) に使う文言。省略時は title を使用 */
+  heading?: string;
+}
+
+const { title, heading } = Astro.props;
+const siteName = "日本オペレーションズ・リサーチ学会 中国・四国支部";
+---
+
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="keywords"
+      content="日本オペレーションズ・リサーチ学会,OR,日本OR学会,学会,OR学会,中国・四国支部"
+    />
+    <meta
+      name="description"
+      content="日本オペレーションズ・リサーチ学会 中国・四国支部に関する情報およびご連絡．"
+    />
+    <title>{title}</title>
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="site-header__inner">
+        <a class="site-header__logo" href="/" aria-label="ホーム">
+          <img src="/images/logo.gif" alt="日本OR学会 中国・四国支部" />
+        </a>
+        <p class="site-header__title">
+          <a href="/">{siteName}</a>
+        </p>
+      </div>
+    </header>
+
+    <SiteNav />
+
+    <main>
+      <h1 class="page-title">{heading ?? title}</h1>
+      <slot />
+    </main>
+
+    <SiteFooter />
+  </body>
+</html>

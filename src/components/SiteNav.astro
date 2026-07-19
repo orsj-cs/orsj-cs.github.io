@@ -1,0 +1,30 @@
+---
+const { pathname } = Astro.url;
+const links = [
+  { href: "/", label: "ホーム" },
+  { href: "/about", label: "支部について" },
+  { href: "/greeting", label: "挨拶" },
+  { href: "/news/", label: "お知らせ" },
+  { href: "/members/", label: "支部役員" },
+  { href: "/achievement/", label: "活動報告" },
+  { href: "/bukai/", label: "研究部会" },
+  { href: "/sokai/", label: "総会資料" },
+  { href: "/history", label: "過去のイベント" },
+  { href: "/office", label: "事務局" },
+  { href: "/link", label: "リンク集" },
+];
+const isCurrent = (href: string) =>
+  href === "/" ? pathname === "/" : pathname.startsWith(href);
+---
+
+<nav class="site-nav" aria-label="サイトナビゲーション">
+  <div class="site-nav__inner">
+    {
+      links.map((l) => (
+        <a href={l.href} aria-current={isCurrent(l.href) ? "page" : undefined}>
+          {l.label}
+        </a>
+      ))
+    }
+  </div>
+</nav>
