@@ -22,7 +22,7 @@ Deployment is automatic: pushing to `master` triggers `.github/workflows/deploy.
 Two content tiers, deliberately separated:
 
 1. **Living pages** — hand-authored Astro under `src/pages/`, wrapped in `src/layouts/BaseLayout.astro` (header + `SiteNav` + `SiteFooter` + `src/styles/global.css`):
-   - `index.astro` (home + イベント案内), `history.astro`, `link.astro`, `office.astro`.
+   - `index.astro` (event-community homepage: hero photo placeholder → 次回の研究会 → お知らせ → 今後/過去の予定 → 各種資料 links), `about.astro` (支部について), `greeting.astro` (支部長挨拶), `history.astro`, `link.astro`, `office.astro`, plus `news/index.astro` + `news/[...slug].astro`.
    - Section index lists: `members/index.astro`, `achievement/index.astro`, `bukai/index.astro`, `sokai/index.astro`. These render the legacy link lists via `<Fragment set:html={body} />` because the original HTML uses loose/unclosed `<li>` that Astro's JSX parser rejects. Links inside are **relative** and resolve because each page keeps its original URL depth (e.g. `/sokai/` + `sokai2024/m1.pdf`).
 
 2. **Frozen archive** — served verbatim from `public/` at unchanged URLs (this is why old links never break):
@@ -38,7 +38,8 @@ Two content tiers, deliberately separated:
 - **Add an お知らせ (news post)**: create `src/content/news/YYYY-MM-DD-slug.md` with frontmatter `title` / `date` / optional `category`, then write Markdown body. It auto-appears on `/news/`, gets its own `/news/<slug>/` page, and the newest 3 show on the homepage. Schema is in `src/content.config.ts` (Astro content collection, `glob` loader).
 - **Edit About / Greeting**: `src/pages/about.astro`, `src/pages/greeting.astro` (current text is a draft — look for `TODO` comments).
 - **Add a new officer/report/meeting year**: drop the new PDF into the right `public/<section>/…` folder, then add one `<li>` link at the top of the matching `src/pages/<section>/index.astro` `body` string.
-- **Add/update an event**: edit `src/pages/index.astro` (イベント案内) and `src/pages/history.astro`. Archived event pages live in `public/event/`.
+- **Past events**: `src/pages/history.astro` lists older events; archived individual event pages live in `public/event/`. (New events go through the `events` collection above, not here.)
+- **Theme color**: palette lives in `:root` of `src/styles/global.css` (`--brand` deep blue `#1e3a8a`, `--accent` light blue `#0ea5e9`, light-gray bg; `--radius` 6px). Re-sync `public/assets/archive.css` after changes.
 - **Nav changes**: edit the `links` array in `src/components/SiteNav.astro`, then run `node scripts/patch-archive-nav.mjs` to sync the same nav into the frozen `public/**/*.html` archive pages (keep `NAV_LINKS` there identical to `SiteNav.astro`). `migrate-legacy.mjs` can no longer regenerate the archive (its source tree was deleted), so `patch-archive-nav.mjs` is the maintenance path.
 - **Global styling**: `src/styles/global.css`. If you change it and want frozen archive pages to match, also update `public/assets/archive.css`.
 
@@ -47,3 +48,24 @@ Two content tiers, deliberately separated:
 - Archive pages under `public/` are **not** processed by Astro — they must be complete standalone HTML. Don't add Astro/Liquid syntax there.
 - `global.css` is bundled with a hashed filename; never link to it directly from `public/` HTML — use `/assets/archive.css`.
 - Verify internal links after big changes: build, then a quick file-existence sweep over `dist/` catches 404s (obfuscated `mailto:` entities like `m&#97;i…` show up as false positives — ignore them).
+
+## Session log
+
+### 2026-07-19
+**Done this session:**
+- Full Jekyll → **Astro** migration (config, `BaseLayout`, `SiteNav`/`SiteFooter`, `global.css`); old HTML/PDF archive preserved verbatim under `public/` at unchanged URLs via `scripts/migrate-legacy.mjs`.
+- Content expansion: **お知らせ** (`news` collection), **events** (`events` collection with auto "次回の研究会" on the homepage), **支部について** / **支部長挨拶** pages.
+- Homepage redesigned to event-community layout; theme switched to **blue** (`#1e3a8a` / accent `#0ea5e9`), modest radius.
+- Local dev via **Docker** (`docker compose up dev`) + `scripts/serve-local.sh`.
+- CI (`ci.yml`, job `build`) + production deploy (`deploy.yml`); Node pinned via `.nvmrc` (20).
+- Committed as 4 logical commits on branch `refactor-astro`, pushed, opened **PR #5** (`refactor-astro → master`). Cloudflare Pages connected for PR previews (preview-only; production stays on GitHub Pages).
+
+**Pending / next session:**
+- Merge **PR #5** once CI (`build`) is green and the Cloudflare preview looks correct.
+- **After merge (required):** set GitHub **Settings → Pages → Source = "GitHub Actions"** to switch production off the old Jekyll build.
+- Recommended: connect finalize `master` branch protection (PR required, review required, `build` required).
+- Content TODOs before public launch (grep `TODO`): replace hero **photo** placeholder in `index.astro`; fill real data in `src/content/events/*.md`; confirm お知らせ bodies and `about`/`greeting` drafts.
+
+**Notes for next session:**
+- Cloudflare preview subpath approach was rejected — the site + 61 frozen `public/` archive pages use absolute paths, so previews must be served at a domain root (Cloudflare does this).
+- Event "next/past" split uses build-time `new Date()`; a passed event can linger as "次回" until the next push/rebuild.
