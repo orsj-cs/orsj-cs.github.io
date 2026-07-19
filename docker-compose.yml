@@ -1,0 +1,30 @@
+# ローカル確認用 (Docker のみで Node インストール不要)
+#
+#   開発サーバ (ホットリロード):   docker compose up dev
+#   本番ビルドのプレビュー:        docker compose up preview
+#
+# どちらも http://localhost:4321/ で開けます。停止は Ctrl-C。
+
+services:
+  # ソースを編集すると即反映される開発サーバ
+  dev:
+    build: .
+    command: npm run dev -- --host 0.0.0.0
+    ports:
+      - "4321:4321"
+    volumes:
+      - .:/app # ソースをマウント (編集が即反映)
+      - node_modules:/app/node_modules # 依存はコンテナ側を使用 (ホストと分離)
+
+  # 本番と同じビルド成果物を確認 (dist/ を配信)
+  preview:
+    build: .
+    command: sh -c "npm run build && npm run preview -- --host 0.0.0.0 --port 4321"
+    ports:
+      - "4321:4321"
+    volumes:
+      - .:/app
+      - node_modules:/app/node_modules
+
+volumes:
+  node_modules:

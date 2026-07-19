@@ -1,0 +1,16 @@
+{
+  "name": "orsj-cs-site",
+  "type": "module",
+  "version": "1.0.0",
+  "private": true,
+  "description": "日本OR学会 中国・四国支部 Webサイト (Astro)",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro"
+  },
+  "dependencies": {
+    "astro": "^5.13.0"
+  }
+}

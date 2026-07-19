@@ -1,0 +1,29 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { getCollection, render } from "astro:content";
+import type { GetStaticPaths } from "astro";
+
+export const getStaticPaths = (async () => {
+  const items = await getCollection("news");
+  return items.map((item) => ({
+    params: { slug: item.id },
+    props: { item },
+  }));
+}) satisfies GetStaticPaths;
+
+const { item } = Astro.props;
+const { Content } = await render(item);
+const d = item.data.date;
+const fmt = `${d.getFullYear()}年${d.getMonth() + 1}月${d.getDate()}日`;
+---
+
+<BaseLayout title={`${item.data.title}｜お知らせ`} heading={item.data.title}>
+  <p class="article-meta">
+    <time datetime={d.toISOString()}>{fmt}</time>
+    {item.data.category && <span class="news-list__cat">{item.data.category}</span>}
+  </p>
+  <article class="prose">
+    <Content />
+  </article>
+  <p class="back-link"><a href="/news/">← お知らせ一覧へ</a></p>
+</BaseLayout>

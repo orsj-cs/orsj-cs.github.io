@@ -1,4 +1,14 @@
+# build output
+dist/
+.astro/
 
-achievement/achieve2001.html
-achievement/achieve2001.html
-*.html
+# dependencies
+node_modules/
+
+# macOS
+.DS_Store
+
+# logs / env
+npm-debug.log*
+.env
+.env.production

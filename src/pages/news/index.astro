@@ -1,0 +1,33 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { getCollection } from "astro:content";
+
+const items = (await getCollection("news")).sort(
+  (a, b) => b.data.date.valueOf() - a.data.date.valueOf(),
+);
+const fmt = (d: Date) =>
+  `${d.getFullYear()}年${d.getMonth() + 1}月${d.getDate()}日`;
+---
+
+<BaseLayout title="お知らせ｜中国・四国支部" heading="お知らせ">
+  {items.length === 0 && <p>現在、お知らせはありません。</p>}
+  <ul class="news-list">
+    {
+      items.map((item) => (
+        <li>
+          <a href={`/news/${item.id}/`}>
+            <span class="news-list__date">
+              <time datetime={item.data.date.toISOString()}>
+                {fmt(item.data.date)}
+              </time>
+              {item.data.category && (
+                <span class="news-list__cat">{item.data.category}</span>
+              )}
+            </span>
+            <span class="news-list__title">{item.data.title}</span>
+          </a>
+        </li>
+      ))
+    }
+  </ul>
+</BaseLayout>

@@ -1,0 +1,158 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import EventCard from "../components/EventCard.astro";
+import { getCollection } from "astro:content";
+
+// お知らせ最新3件
+const latestNews = (await getCollection("news"))
+  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
+  .slice(0, 3);
+const fmtNews = (d: Date) =>
+  `${d.getFullYear()}年${d.getMonth() + 1}月${d.getDate()}日`;
+
+// イベント（ビルド時点の今日を基準に「今後」「過去」へ振り分け）
+const today = new Date();
+today.setHours(0, 0, 0, 0);
+const allEvents = await getCollection("events");
+const upcoming = allEvents
+  .filter((e) => e.data.date.valueOf() >= today.valueOf())
+  .sort((a, b) => a.data.date.valueOf() - b.data.date.valueOf());
+const past = allEvents
+  .filter((e) => e.data.date.valueOf() < today.valueOf())
+  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+
+const nextEvent = upcoming[0];
+const restUpcoming = upcoming.slice(1);
+const recentPast = past.slice(0, 3);
+
+const sections = [
+  { href: "/members/", title: "支部役員" },
+  { href: "/achievement/", title: "活動報告" },
+  { href: "/bukai/", title: "研究部会" },
+  { href: "/sokai/", title: "総会資料" },
+  { href: "/office", title: "事務局" },
+];
+---
+
+<BaseLayout
+  title="日本オペレーションズ・リサーチ学会 中国・四国支部"
+  heading="日本オペレーションズ・リサーチ学会 中国・四国支部"
+>
+  <!-- ヒーロー（写真プレースホルダ枠＋一言紹介） -->
+  <section class="hero">
+    <figure class="hero-photo">
+      {/* TODO: 瀬戸内・会場・研究会風景の写真を public/images/ に置き、下の img に差し替え */}
+      <div class="hero-photo__placeholder" aria-hidden="true">写真</div>
+      <figcaption>中国・四国地区でORの研究交流を行っています</figcaption>
+    </figure>
+    <div class="hero__text">
+      <p>
+        中国・四国地区におけるオペレーションズ・リサーチ（OR）の研究・教育・普及の
+        拠点として、講演会・シンポジウム・SSOR・研究部会などを開催しています。
+      </p>
+      <p class="hero__links">
+        <a href="/about">支部について ›</a>
+        <a href="/greeting">支部長挨拶 ›</a>
+      </p>
+    </div>
+  </section>
+
+  <!-- 次回の研究会（最優先） -->
+  <section>
+    <h2>次回の研究会・講演会</h2>
+    {
+      nextEvent ? (
+        <EventCard
+          title={nextEvent.data.title}
+          date={nextEvent.data.date}
+          venue={nextEvent.data.venue}
+          deadline={nextEvent.data.deadline}
+          applyUrl={nextEvent.data.applyUrl}
+          featured={true}
+        />
+      ) : (
+        <p class="empty-note">次回の予定は準備中です。決まり次第お知らせします。</p>
+      )
+    }
+  </section>
+
+  <!-- お知らせ -->
+  <section>
+    <div class="section-head">
+      <h2>お知らせ</h2>
+      <a class="more-link" href="/news/">一覧を見る ›</a>
+    </div>
+    <ul class="news-list">
+      {
+        latestNews.map((item) => (
+          <li>
+            <a href={`/news/${item.id}/`}>
+              <span class="news-list__date">
+                <time datetime={item.data.date.toISOString()}>
+                  {fmtNews(item.data.date)}
+                </time>
+                {item.data.category && (
+                  <span class="news-list__cat">{item.data.category}</span>
+                )}
+              </span>
+              <span class="news-list__title">{item.data.title}</span>
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </section>
+
+  <!-- 今年度の予定 -->
+  {
+    restUpcoming.length > 0 && (
+      <section>
+        <h2>今後の予定</h2>
+        <div class="event-list">
+          {restUpcoming.map((e) => (
+            <EventCard
+              title={e.data.title}
+              date={e.data.date}
+              venue={e.data.venue}
+              deadline={e.data.deadline}
+              applyUrl={e.data.applyUrl}
+            />
+          ))}
+        </div>
+      </section>
+    )
+  }
+
+  <!-- 過去の研究会 -->
+  <section>
+    <div class="section-head">
+      <h2>過去の研究会</h2>
+      <a class="more-link" href="/history">すべて見る ›</a>
+    </div>
+    {
+      recentPast.length > 0 ? (
+        <div class="event-list">
+          {recentPast.map((e) => (
+            <EventCard
+              title={e.data.title}
+              date={e.data.date}
+              venue={e.data.venue}
+            />
+          ))}
+        </div>
+      ) : (
+        <p class="empty-note">
+          過去のイベントは<a href="/history">過去のイベント</a>ページをご覧ください。
+        </p>
+      )
+    }
+  </section>
+
+  <!-- 各種資料（下位） -->
+  <section>
+    <h2>各種資料</h2>
+    <div class="link-row">
+      {sections.map((s) => <a class="chip" href={s.href}>{s.title}</a>)}
+    </div>
+  </section>
+</BaseLayout>
